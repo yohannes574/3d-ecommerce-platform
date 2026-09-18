@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+
+# builds
+client/dist/
+dist/
+build/
+
+# environment variables
+.env
+.env.*
+!.env.example
+
+# uploads (user generated content)
+server/uploads/*
+!server/uploads/.gitkeep
+
+# logs & misc
+*.log
+.DS_Store
+Thumbs.db
+.vite/
+
+# AI/tool configuration
+.freebuff/

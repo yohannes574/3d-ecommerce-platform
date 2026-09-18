@@ -1,0 +1,5 @@
+The platform combines a multi-vendor electronics marketplace with an interactive 3D product visualization system. Customers can explore products using interactive 3D models before purchasing, while approved sellers can create and manage their own products, including product images, specifications, variants, 3D models, and interactive 3D hotspots.
+
+The first version of the platform will primarily focus on smartphones. However, the system architecture will be designed to support additional electronics categories such as laptops, headphones, smartwatches, tablets, and other electronic products in the future.
+
+The central purpose of the system is to make online electronics shopping more informative and interactive by allowing customers to understand a product visually before making a purchasing decision.

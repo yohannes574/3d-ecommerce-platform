@@ -1,0 +1,20 @@
+{
+  "name": "voltix-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Voltix — multi-vendor electronics marketplace with interactive 3D product visualization (MERN)",
+  "scripts": {
+    "install-all": "npm install && npm --prefix server install && npm --prefix client install",
+    "seed": "npm --prefix server run seed",
+    "server": "npm --prefix server run dev",
+    "client": "npm --prefix client run dev",
+    "dev": "concurrently -k -n SERVER,CLIENT -c blue,green \"npm:server\" \"npm:client\"",
+    "build": "npm --prefix client run build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "dependencies": {
+    "seed": "^0.4.4"
+  }
+}
