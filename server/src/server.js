@@ -30,13 +30,14 @@ app.use('/uploads', express.static(UPLOAD_DIR));
 
 /* ---------- CORS ---------- */
 
-const origins = (
-  process.env.CLIENT_ORIGIN ||
-  'http://localhost:5173,http://localhost:4173,https://voltix-frontend.onrender.com'
-)
-  .split(',')
-  .map((o) => o.trim())
-  .filter(Boolean);
+const origins = [
+  'http://localhost:5173',
+  'http://localhost:4173',
+  'http://localhost:4174',
+  'https://voltix-frontend.onrender.com',
+];
+
+console.log('✅ Allowed CORS origins:', origins);
 
 app.use(
   cors({
