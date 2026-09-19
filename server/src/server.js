@@ -20,7 +20,7 @@ const {
 
 const app = express();
 
-/* ---------- static uploads dir ---------- */
+/* ---------- Static uploads directory ---------- */
 
 const UPLOAD_DIR = path.join(__dirname, '..', 'uploads');
 
@@ -30,28 +30,42 @@ app.use('/uploads', express.static(UPLOAD_DIR));
 
 /* ---------- CORS ---------- */
 
-const origins = [
+const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:4173',
   'http://localhost:4174',
   'https://voltix-frontend.onrender.com',
 ];
 
-console.log('✅ Allowed CORS origins:', origins);
+console.log('✅ Allowed CORS origins:', allowedOrigins);
 
 app.use(
   cors({
-    origin: origins,
+    origin: (origin, callback) => {
+      // Allow requests without an Origin header
+      // such as direct server-to-server requests.
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        console.log(`✅ CORS allowed: ${origin}`);
+        return callback(null, true);
+      }
+
+      console.log(`❌ CORS blocked: ${origin}`);
+      return callback(new Error(`CORS blocked: ${origin}`));
+    },
   })
 );
 
-/* ---------- global middleware ---------- */
+/* ---------- Global middleware ---------- */
 
 app.use(express.json({ limit: '2mb' }));
 
 app.use(helmetMiddleware);
 
-/* ---------- rate limits ---------- */
+/* ---------- Rate limits ---------- */
 
 app.use('/api/upload', uploadLimiter);
 
@@ -87,24 +101,29 @@ app.use('/api/upload', require('./routes/upload.routes'));
 
 app.use('/api/payments', require('./routes/payment.routes'));
 
-/* ---------- 404 + errors ---------- */
+/* ---------- 404 + Error handling ---------- */
 
 app.use(notFound);
 
 app.use(errorHandler);
 
-/* ---------- boot ---------- */
+/* ---------- Server boot ---------- */
 
 const PORT = process.env.PORT || 5000;
 
 (async () => {
-  await connectDB();
+  try {
+    await connectDB();
 
-  require('./utils/notify').verifyMailer();
+    require('./utils/notify').verifyMailer();
 
-  app.listen(PORT, () => {
-    console.log(
-      `🚀 Voltix API running on http://localhost:${PORT}`
-    );
-  });
+    app.listen(PORT, () => {
+      console.log(
+        `🚀 Voltix API running on http://localhost:${PORT}`
+      );
+    });
+  } catch (error) {
+    console.error('❌ Server startup failed:', error);
+    process.exit(1);
+  }
 })();
