@@ -3,7 +3,6 @@ require('dotenv').config();
 const path = require('path');
 const fs = require('fs');
 const express = require('express');
-const cors = require('cors');
 
 const connectDB = require('./config/db');
 
@@ -31,16 +30,36 @@ fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 app.use('/uploads', express.static(UPLOAD_DIR));
 
 /* =========================================================
-   CORS
+   MANUAL CORS
 ========================================================= */
 
-// Temporarily allow the requesting origin.
-// This is useful for testing the production CORS problem.
-app.use(
-  cors({
-    origin: true,
-  })
-);
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+  }
+
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PUT, PATCH, DELETE, OPTIONS'
+  );
+
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
+
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+  // Handle browser preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
 
 /* =========================================================
    Global middleware
