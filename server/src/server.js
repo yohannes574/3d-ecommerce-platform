@@ -41,7 +41,7 @@ console.log('✅ Allowed CORS origins:', allowedOrigins);
 
 app.use(
   cors({
-    origin: (origin, callback) => {
+    origin: function (origin, callback) {
       // Allow requests without an Origin header
       // such as direct server-to-server requests.
       if (!origin) {
@@ -54,7 +54,7 @@ app.use(
       }
 
       console.log(`❌ CORS blocked: ${origin}`);
-      return callback(new Error(`CORS blocked: ${origin}`));
+      return callback(null, false);
     },
   })
 );
