@@ -20,7 +20,9 @@ const {
 
 const app = express();
 
-/* ---------- Static uploads directory ---------- */
+/* =========================================================
+   Static uploads directory
+========================================================= */
 
 const UPLOAD_DIR = path.join(__dirname, '..', 'uploads');
 
@@ -28,50 +30,37 @@ fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 app.use('/uploads', express.static(UPLOAD_DIR));
 
-/* ---------- CORS ---------- */
+/* =========================================================
+   CORS
+========================================================= */
 
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:4173',
-  'http://localhost:4174',
-  'https://voltix-frontend.onrender.com',
-];
-
-console.log('✅ Allowed CORS origins:', allowedOrigins);
-
+// Temporarily allow the requesting origin.
+// This is useful for testing the production CORS problem.
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests without an Origin header
-      // such as direct server-to-server requests.
-      if (!origin) {
-        return callback(null, true);
-      }
-
-      if (allowedOrigins.includes(origin)) {
-        console.log(`✅ CORS allowed: ${origin}`);
-        return callback(null, true);
-      }
-
-      console.log(`❌ CORS blocked: ${origin}`);
-      return callback(null, false);
-    },
+    origin: true,
   })
 );
 
-/* ---------- Global middleware ---------- */
+/* =========================================================
+   Global middleware
+========================================================= */
 
 app.use(express.json({ limit: '2mb' }));
 
 app.use(helmetMiddleware);
 
-/* ---------- Rate limits ---------- */
+/* =========================================================
+   Rate limiting
+========================================================= */
 
 app.use('/api/upload', uploadLimiter);
 
 app.use('/api', apiLimiter);
 
-/* ---------- API routes ---------- */
+/* =========================================================
+   Health check
+========================================================= */
 
 app.get('/api/health', (req, res) => {
   res.json({
@@ -80,6 +69,10 @@ app.get('/api/health', (req, res) => {
     time: new Date().toISOString(),
   });
 });
+
+/* =========================================================
+   API routes
+========================================================= */
 
 app.use('/api/auth', require('./routes/auth.routes'));
 
@@ -101,13 +94,17 @@ app.use('/api/upload', require('./routes/upload.routes'));
 
 app.use('/api/payments', require('./routes/payment.routes'));
 
-/* ---------- 404 + Error handling ---------- */
+/* =========================================================
+   404 + Error handling
+========================================================= */
 
 app.use(notFound);
 
 app.use(errorHandler);
 
-/* ---------- Server boot ---------- */
+/* =========================================================
+   Server startup
+========================================================= */
 
 const PORT = process.env.PORT || 5000;
 
